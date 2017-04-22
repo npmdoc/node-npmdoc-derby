@@ -4994,21 +4994,21 @@ if (this._cancelAttach) {
   return view.getFragment(this.context);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-  var view = this.getView(viewName, ns);
+Component.prototype.get = function(viewName, unescaped) {
+  var view = this.getView(viewName);
   return view.get(this.context, unescaped);
 };
 
-Page.prototype.getFragment = function(viewName, ns) {
-  this._setRenderPrefix(ns);
-  var view = this.getView(viewName, ns);
+Component.prototype.getFragment = function(viewName) {
+  var view = this.getView(viewName);
   return view.<span class="apidocCodeKeywordSpan">getFragment</span>(this.context);
 };
 
-Page.prototype.getView = function(viewName, ns) {
-  return this.app.views.find(viewName, ns);
+Component.prototype.getView = function(viewName) {
+  var contextView = this.context.getView();
+  return (viewName) ?
+    this.app.views.find(viewName, contextView.namespace) : contextView;
 };
-
-Page.prototype.render = function(ns) {
 ...</pre></li>
     </ul>
 
@@ -5040,21 +5040,21 @@ Page.prototype.render = function(ns) {
   return this.app.views.find(viewName, ns);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-Page.prototype._setRenderPrefix = function(ns) {
-var prefix = (ns) ? ns + &#x27;:&#x27; : &#x27;&#x27;;
-this.model.set(&#x27;$render.prefix&#x27;, prefix);
+  this.model.destroy();
+  delete this.page._components[this.id];
+  var components = this.page._eventModel.object.$components;
+  if (components) delete components.object[this.id];
 };
 
-Page.prototype.get = function(viewName, ns, unescaped) {
-this._setRenderPrefix(ns);
-var view = this.<span class="apidocCodeKeywordSpan">getView</span>(viewName, ns);
-return view.get(this.context, unescaped);
+Component.prototype.get = function(viewName, unescaped) {
+  var view = this.<span class="apidocCodeKeywordSpan">getView</span>(viewName);
+  return view.get(this.context, unescaped);
 };
 
-Page.prototype.getFragment = function(viewName, ns) {
-this._setRenderPrefix(ns);
-var view = this.getView(viewName, ns);
-return view.getFragment(this.context);
+Component.prototype.getFragment = function(viewName) {
+  var view = this.getView(viewName);
+  return view.getFragment(this.context);
+};
 ...</pre></li>
     </ul>
 
@@ -6376,21 +6376,21 @@ if (this.item === newItem) return;
   });
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-});
-var unloadListener = model.on(&#x27;unload&#x27;, &#x27;**&#x27;, function onUnload(path) {
-  var segments = util.castSegments(path.split(&#x27;.&#x27;));
-  eventModel.set(segments);
-});
-var insertListener = model.on(&#x27;insert&#x27;, &#x27;**&#x27;, function onInsert(path, index, values) {
-  var segments = util.castSegments(path.split(&#x27;.&#x27;));
-  eventModel.<span class="apidocCodeKeywordSpan">insert</span>(segments, index, values.length);
-});
-var removeListener = model.on(&#x27;remove&#x27;, &#x27;**&#x27;, function onRemove(path, index, values) {
-  var segments = util.castSegments(path.split(&#x27;.&#x27;));
-  eventModel.remove(segments, index, values.length);
-});
-var moveListener = model.on(&#x27;move&#x27;, &#x27;**&#x27;, function onMove(path, from, to, howMany) {
-  var segments = util.castSegments(path.split(&#x27;.&#x27;));
+    this._updateChildItemContexts(index + howMany);
+  }
+
+  // Finally call our bindings.
+  if (this.bindings) {
+    for (var id in this.bindings) {
+      var binding = this.bindings[id];
+      if (binding) binding.<span class="apidocCodeKeywordSpan">insert</span>(index, howMany);
+    }
+  }
+  this._updateObject();
+};
+
+// Remove howMany child elements from this EventModel at index.
+EventModel.prototype._remove = function(index, howMany) {
 ...</pre></li>
     </ul>
 
@@ -6491,21 +6491,21 @@ if (this.object) {
   });
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-});
-var removeListener = model.on(&#x27;remove&#x27;, &#x27;**&#x27;, function onRemove(path, index, values) {
-  var segments = util.castSegments(path.split(&#x27;.&#x27;));
-  eventModel.remove(segments, index, values.length);
-});
-var moveListener = model.on(&#x27;move&#x27;, &#x27;**&#x27;, function onMove(path, from, to, howMany) {
-  var segments = util.castSegments(path.split(&#x27;.&#x27;));
-  eventModel.<span class="apidocCodeKeywordSpan">move</span>(segments, from, to, howMany);
-});
+    this._updateChildItemContexts(first, end);
+  }
 
-this._removeModelListeners = function() {
-  model.removeListener(&#x27;change&#x27;, changeListener);
-  model.removeListener(&#x27;load&#x27;, loadListener);
-  model.removeListener(&#x27;unload&#x27;, unloadListener);
-  model.removeListener(&#x27;insert&#x27;, insertListener);
+  // Finally call our bindings.
+  if (this.bindings) {
+    for (var id in this.bindings) {
+      var binding = this.bindings[id];
+      if (binding) binding.<span class="apidocCodeKeywordSpan">move</span>(from, to, howMany);
+    }
+  }
+  this._updateObject();
+};
+
+
+// Helpers.
 ...</pre></li>
     </ul>
 
