@@ -80,7 +80,8 @@
     "scripts": {
         "test": "mocha test/all/*.mocha.js; ./node_modules/.bin/jshint lib/*.js test/*.js"
     },
-    "version": "0.9.7"
+    "version": "0.9.7",
+    "bin": {}
 }
 ```
 
